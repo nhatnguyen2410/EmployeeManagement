@@ -1,0 +1,51 @@
+.modal-add
+    display: none
+    position: fixed
+    top: 0px
+    right: 0px
+    bottom: 0px
+    left: 0px
+    background: rgba(0, 0, 0, 0.3)
+    animation: sketchIn
+.md-form label
+    position: relative !important
+.modal-content
+    margin-top: 100px
+    .modal-body
+        width: 500px
+        height: 600px
+        overflow: auto
+
+    .btn-rounded
+        text-transform: uppercase
+        vertical-align: bottom
+        border: 0
+        font-weight: 500
+        padding: 0.625rem 1.5rem 0.5rem
+        font-size: .75rem
+        line-height: 1.5
+        border-radius: 10rem
+        width: 100px
+        height: 45px
+    .form-select
+        border: 0
+        border-bottom: 1px solid #ced4da
+        border-radius: 0
+        outline: 0
+        margin-bottom: 2px
+    .form-select:focus
+        box-shadow: none
+        border-color: none
+
+.modal-notify .modal-header
+    border-radius: 3px 3px 0 0
+
+.modal-notify .modal-content
+    border-radius: 3px
+
+@keyframes sketchIn
+    0%
+        stroke-dashoffset: 778
+
+    100%
+        stroke-dashoffset: 0

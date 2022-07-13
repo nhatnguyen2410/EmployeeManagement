@@ -1,0 +1,8 @@
+export const  SET_OPEN_ADD='set_open_add'
+export const  SET_OPEN_EDIT='set_open_edit'
+export const SET_DELETE_ALL='set_delete_all'
+export const SET_MAIN_PAGE='set_main_page'
+export const SET_DELETE_ITEM_SELECTED='accept_delete_item_selected'
+export const ADD_SUCCESS='add_success'
+export const SET_ID_DELETE='set_id_delete'
+export const SET_ADD_TEAM='set_add_team'
