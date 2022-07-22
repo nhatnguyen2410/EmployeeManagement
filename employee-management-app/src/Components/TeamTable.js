@@ -8,10 +8,15 @@ import { EmployeePageStore } from "../Store";
 import { actions } from "../Store";
 import Swal from "sweetalert2";
 import { setAddTeam } from "../Store/action";
+import ReactPaginate from "react-paginate";
 
 function TeamTable() {
   const [teamList, setTeamList] = useState([]);
+  const [teamListPaginate, setTeamListPaginate] = useState([]);
+
   const [memberList, setMemberList] = useState([]);
+  const [memberListPaginate, setMemberListPaginate] = useState([]);
+
   const [teamCurrent, SetTeamCurrent] = useState("");
   const [totalTeam, setTotalTeam] = useState();
   const [totalEL, setTotalEL] = useState(0);
@@ -27,6 +32,19 @@ function TeamTable() {
     } catch (error) {
       console.log(error);
     }
+  }
+  function handleTeamListPaginate(Arr, pageNumber) {
+    const arr = teamList.filter(
+      (el, i) => i >= pageNumber * 5 && i < pageNumber * 5 + 5
+    );
+    setTeamListPaginate(arr);
+  }
+
+  function handleEmployeeListPaginate(Arr, pageNumber) {
+    const arr = memberList.filter(
+      (el, i) => i >= pageNumber * 5 && i < pageNumber * 5 + 5
+    );
+    setMemberListPaginate(arr);
   }
 
   async function handleAddTeam(teamNew) {
@@ -50,8 +68,8 @@ function TeamTable() {
             showConfirmButton: false,
             timer: 1500,
           }).then(() => {
-            fetchTeam()
-            dispatch(setAddTeam(false))
+            fetchTeam();
+            dispatch(setAddTeam(false));
           });
         })
         .catch((error) => {
@@ -124,6 +142,15 @@ function TeamTable() {
   }, []);
 
   useEffect(() => {
+    if (teamList) {
+      handleTeamListPaginate(teamList, 0);
+    }
+    if (memberList) {
+      handleEmployeeListPaginate(memberList, 0);
+    }
+  }, [teamList, memberList]);
+
+  useEffect(() => {
     if (teamCurrent !== "") {
       fetchMember(teamCurrent);
     }
@@ -171,7 +198,7 @@ function TeamTable() {
   const columnTeam = [
     {
       name: "No",
-      selector: (row) => row.id,
+      selector: (row,index) => index,
     },
     {
       name: "Name Team",
@@ -195,7 +222,7 @@ function TeamTable() {
   const columnEL = [
     {
       name: "No",
-      selector: (row) => row.id,
+      selector: (row,index) => index,
     },
     {
       name: "Full Name ",
@@ -221,12 +248,26 @@ function TeamTable() {
         <div className="table-Team  col-sm-4">
           <label>Total {totalTeam} teams</label>
           <DataTable
-            data={teamList}
+            data={teamListPaginate}
             columns={columnTeam}
             customStyles={customStyles}
             highlightOnHover
             striped
-            pagination
+          />
+
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >>"
+            pageRangeDisplayed={5}
+            pageCount={totalTeam / 5}
+            previousLabel="<<"
+            renderOnZeroPageCount={null}
+            containerClassName="pagination-page"
+            pageClassName="li-page"
+            disabledClassName="button-disable"
+            onPageChange={(page) => {
+              handleTeamListPaginate(teamList, page.selected);
+            }}
           />
         </div>
 
@@ -236,12 +277,25 @@ function TeamTable() {
           </label>
 
           <DataTable
-            data={memberList}
-            pagination
+            data={memberListPaginate}
             columns={columnEL}
             customStyles={customStyles}
             highlightOnHover
             striped
+          />
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel=" >>"
+            pageRangeDisplayed={5}
+            pageCount={totalEL / 5}
+            onPageChange={(page) => {
+              handleEmployeeListPaginate(teamList, page.selected);
+            }}
+            previousLabel="<<"
+            renderOnZeroPageCount={null}
+            containerClassName="pagination-page"
+            pageClassName="li-page"
+            disabledClassName="button-disable"
           />
         </div>
       </div>

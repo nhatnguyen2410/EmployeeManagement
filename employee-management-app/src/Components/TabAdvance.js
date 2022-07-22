@@ -9,15 +9,17 @@ import "../sass/TabAdvance.sass";
 import DataTable from "react-data-table-component";
 import { convertDate } from "../Store/functions";
 import "react-toastify/dist/ReactToastify.css";
+import ReactPaginate from "react-paginate";
 
 function TabAdvance() {
   const employeeId = useParams().id;
   console.log("idadad:" + employeeId);
   const [arrAdvance, setArrAdvance] = useState([]);
   const [addAdvance, setAddAdvance] = useState(false);
+  const [totalAdvance, settotalAdvance] = useState();
   const [deleteAdvance, setDeleteAdvance] = useState(false);
   const [advanceID, setAdvanceID] = useState();
-
+  const [advanceListPaginate, setAdvanceListPaginate] = useState([]);
 
   function deleteAdvanceAPI(id) {
     try {
@@ -29,6 +31,18 @@ function TabAdvance() {
       console.log(error);
     }
   }
+  function handleAdvancePaginate(Arr, pageNumber) {
+    const arr = arrAdvance.filter(
+      (el, i) => i >= pageNumber * 5 && i < pageNumber * 5 + 5
+    );
+    setAdvanceListPaginate(arr);
+  }
+
+  useEffect(() => {
+    if (arrAdvance) {
+      handleAdvancePaginate(arrAdvance, 0);
+    }
+  }, [arrAdvance]);
 
   function handleDeleteAdvance(id) {
     console.log("id xoa :" + id);
@@ -143,7 +157,8 @@ function TabAdvance() {
     try {
       const response = await api.get(`advance/advanceList/${employeeId}`);
       if (response && response.data) {
-        setArrAdvance(response.data);
+        setArrAdvance(response.data.data);
+        settotalAdvance(response.data.message);
       }
     } catch (error) {
       console.log(error.response);
@@ -157,7 +172,7 @@ function TabAdvance() {
   const columns = [
     {
       name: "No",
-      selector: (row) => row.id,
+      selector: (row,index) => index,
     },
     {
       name: "Date",
@@ -239,14 +254,35 @@ function TabAdvance() {
       <hr />
       <DataTable
         style={{ marginBottom: "3%" }}
-        data={arrAdvance}
+        data={advanceListPaginate}
         columns={columns}
         highlightOnHover
-        pagination
         fixedHeader
         fixedHeaderScrollHeight="450px"
         customStyles={customStyles}
       />
+      {
+        advanceListPaginate.length>0 ?
+        (
+          <ReactPaginate
+        breakLabel="..."
+        nextLabel=" >>"
+        pageRangeDisplayed={5}
+        pageCount={totalAdvance / 5}
+        onPageChange={(page) => {
+          handleAdvancePaginate(arrAdvance, page.selected);
+        }}
+        previousLabel="<<"
+        renderOnZeroPageCount={null}
+        containerClassName="pagination-page"
+        pageClassName="li-page"
+        disabledClassName="button-disable"
+      />
+        )
+        :(
+          <></>
+        )
+      }
     </div>
   );
 }

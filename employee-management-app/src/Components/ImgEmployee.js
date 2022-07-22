@@ -36,25 +36,32 @@ function ImgEmployee({ data }) {
   }
   async function uploadImage(e) {
     let imgCurrent = e.target.files[0];
-    console.log("anh", imgSelected);
-    const data = new FormData();
-    data.append("file", imgCurrent);
-    data.append("upload_preset", "darwin");
-    setLoading(true);
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/tmasolution/image/upload",
-      {
-        method: "POST",
-        body: data,
-      }
-    );
-    const file = await res.json();
-    setImgSelected(file.secure_url);
-    setLoading(false);
-  }
-
+    if(imgCurrent!==undefined)
+    {
+      console.log("anh", imgSelected);
+      const data = new FormData();
+      data.append("file", imgCurrent);
+      data.append("upload_preset", "darwin");
+      setLoading(true);
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/tmasolution/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+      const file = await res.json();
+      setImgSelected(file.secure_url);
+      setLoading(false);
+    }
+  
+    }
+   
   useEffect(() => {
-    saveImg()
+    if(imgSelected!=="")
+    {
+      saveImg()
+    }
 
   }, [imgSelected]);
   return (

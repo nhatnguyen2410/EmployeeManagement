@@ -215,7 +215,7 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/deleteAll")
+    @DeleteMapping("/deleteAll")
     public String delete_AllEmployee() {
         try {
             employeeService.deleteAllEmployee();

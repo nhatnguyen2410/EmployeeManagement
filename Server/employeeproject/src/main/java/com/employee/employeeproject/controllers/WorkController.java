@@ -33,8 +33,11 @@ public class WorkController {
     private EmployeeService employeeService;
 
     @GetMapping("workList/{id}")
-    public List<WorkDTO> getWork(@PathVariable Integer id) {
-        return workService.getAllWorkByID(id);
+    public ResponseEntity<ResponseObject> getWork(@PathVariable Integer id) {
+        List<WorkDTO> workDTOs=workService.getAllWorkByID(id);
+        Integer total=workDTOs.size();
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("succcess", total.toString(), workDTOs));
+
     }
 
     @PostMapping("add")

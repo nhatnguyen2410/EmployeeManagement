@@ -63,7 +63,5 @@ public class TeamService {
     {
         return repository.existsByName(name);
     }
-    public long count() {
-        return repository.count();
-    }
+    
 }

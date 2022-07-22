@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { convertDate } from "../Store/functions";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactPaginate from "react-paginate";
 
 function TabWork() {
   const employeeId = useParams().id;
@@ -19,7 +20,8 @@ function TabWork() {
   const [deleteWork, setDeleteWork] = useState(false);
   const [workID, setWorkID] = useState();
   const [result, setResult] = useState("");
-
+  const [totalWork, setTotalWork] = useState();
+  const [workListPaginate, setWorkListPaginate] = useState([]);
   function deleteWorkAPI(id) {
     try {
       api.delete(`work/delete/${id}`).then((res) => {
@@ -32,13 +34,25 @@ function TabWork() {
     }
   }
 
+  function handleWorkPaginate(Arr, pageNumber) {
+    const arr = arrWork.filter(
+      (el, i) => i >= pageNumber * 5 && i < pageNumber * 5 + 5
+    );
+    setWorkListPaginate(arr);
+  }
 
+  useEffect(() => {
+    if (arrWork) {
+      handleWorkPaginate(arrWork, 0);
+    }
+  }, [arrWork]);
 
   const fetchWork = async () => {
     try {
       const response = await api.get(`work/workList/${employeeId}`);
       if (response && response.data) {
-        setArrWork(response.data);
+        setArrWork(response.data.data);
+        setTotalWork(response.data.message);
       }
     } catch (error) {
       console.log(error.response);
@@ -182,7 +196,7 @@ function TabWork() {
   const columns = [
     {
       name: "No",
-      selector: (row) => row.id,
+      selector: (row,index) => index,
     },
     {
       name: "Date",
@@ -263,14 +277,32 @@ function TabWork() {
       <hr />
       <DataTable
         style={{ marginBottom: "4%" }}
-        data={arrWork}
+        data={workListPaginate}
         columns={columns}
         highlightOnHover
-        pagination
         fixedHeader
         fixedHeaderScrollHeight="450px"
         customStyles={customStyles}
       />
+      {
+        workListPaginate.length > 0  ?(
+          <ReactPaginate
+        breakLabel="..."
+        nextLabel=" >>"
+        pageRangeDisplayed={5}
+        pageCount={totalWork / 5}
+        onPageChange={(page) => {
+          handleWorkPaginate(arrWork, page.selected);
+        }}
+        previousLabel="<<"
+        renderOnZeroPageCount={null}
+        containerClassName="pagination-page"
+        pageClassName="li-page"
+        disabledClassName="button-disable"
+      />
+        ) :(<>
+        </>)
+      }
     </div>
   );
 }

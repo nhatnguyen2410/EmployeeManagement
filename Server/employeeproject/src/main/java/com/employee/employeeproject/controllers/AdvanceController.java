@@ -1,4 +1,5 @@
 package com.employee.employeeproject.controllers;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -29,9 +30,12 @@ public class AdvanceController {
     private EmployeeService employeeService;
 
     @GetMapping("advanceList/{id}")
-    public List<AdvanceDTO> getAdvanceByID(@PathVariable Integer id)
+    public ResponseEntity<ResponseObject> getAdvanceByID(@PathVariable Integer id)
     {
-        return AdvanceService.getAllAdvanceByID(id);
+        List<AdvanceDTO> advances=AdvanceService.getAllAdvanceByID(id);
+        Integer total=advances.size();
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("succcess", total.toString(), advances));
     }
 
 

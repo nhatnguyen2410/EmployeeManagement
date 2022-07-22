@@ -7,11 +7,9 @@ const initState = {
   pageName: "Employee",
   acceptDelete: false,
   addSuccess: false,
-  addTeam:false,
-  idDelete:undefined
+  addTeam: false,
+  idDelete: undefined,
 };
-
-
 
 export default function EmployeesReducer(state = initState, action) {
   switch (action.type) {
@@ -48,18 +46,18 @@ export default function EmployeesReducer(state = initState, action) {
         ...state,
         addSuccess: action.payload,
       };
-    
+
     case contants.SET_ID_DELETE:
-      return{
+      return {
         ...state,
-        idDelete:action.payload,
+        idDelete: action.payload,
       };
 
-      case contants.SET_ADD_TEAM:
-        return{
-          ...state,
-          addTeam:action.payload,
-        };
+    case contants.SET_ADD_TEAM:
+      return {
+        ...state,
+        addTeam: action.payload,
+      };
     default:
       throw new Error("invalid action");
   }

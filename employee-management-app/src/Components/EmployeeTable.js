@@ -3,10 +3,15 @@ import { createTheme } from "react-data-table-component";
 import { api } from "../API/index";
 import DataTable from "react-data-table-component";
 import queryString from "query-string";
-import { setAddSuccess, setDeleteAll, setDeleteItemSelected, setMainPage } from "../Store/action";
+import {
+  setAddSuccess,
+  setDeleteAll,
+  setDeleteItemSelected,
+  setMainPage,
+} from "../Store/action";
 import Swal from "sweetalert2";
-import { Link  } from "react-router-dom";
-import {  } from "../Store";
+import { Link } from "react-router-dom";
+import {} from "../Store";
 import {
   faSearch,
   faInfo,
@@ -14,6 +19,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { EmployeePageStore } from "../Store/Hooks";
+import Pagination from "react-pagination-library";
+import "react-pagination-library/build/css/index.css"; //for css
+import ReactPaginate from "react-paginate";
+
+const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 
 var arrayCheck = [];
 const EmployeeTable = () => {
@@ -22,7 +32,7 @@ const EmployeeTable = () => {
   const [search, setSearch] = useState("");
   const [filterEmployees, setFilterEmployees] = useState([]);
   const [totalRowsPerPage, setTotalRowsPerPage] = useState(5);
-  const [totalRows, setTotalRows] = useState(0)
+  const [totalRows, setTotalRows] = useState(0);
   const [pageNumber, setpageNumber] = useState(1);
   const [name, setName] = useState();
   const [key, setKey] = useState();
@@ -43,8 +53,9 @@ const EmployeeTable = () => {
       let isChecking = checkboxRef.current;
       if (checkAcceptDelete) {
         if (isChecking.checked === true) {
-          handleDeleteAllEL();
-          setFilterEmployees([]);
+          api.delete(`employee/deleteAll`).then(() => {
+            fetchEmployees();
+          });
         } else {
           try {
             api
@@ -58,10 +69,10 @@ const EmployeeTable = () => {
               checkBoxaArr[i].checked = false;
             }
             dispatch(setDeleteAll(false));
-            dispatch(setDeleteItemSelected(false))
+            dispatch(setDeleteItemSelected(false));
           } catch (error) {}
           dispatch(setDeleteAll(false));
-          dispatch(setDeleteItemSelected(false))
+          dispatch(setDeleteItemSelected(false));
         }
       }
     }
@@ -70,9 +81,11 @@ const EmployeeTable = () => {
   }, [acceptDelete, addSuccess]);
 
   const customStyles = {
-    table:{style:{
-      minHeight: "450px",
-    }},
+    table: {
+      style: {
+        minHeight: "450px",
+      },
+    },
     rows: {
       style: {
         minHeight: "72px", // override the row height
@@ -90,15 +103,31 @@ const EmployeeTable = () => {
         paddingRight: "8px",
       },
     },
-     headRow: {
-          style: {
-            borderTopStyle: 'solid',
-            borderTopWidth: '1px',
-            borderColor: "#ccc",
-            border: "1px solid #ccc"
-            
-          },
-        }
+    headRow: {
+      style: {
+        borderTopStyle: "solid",
+        borderTopWidth: "1px",
+        borderColor: "#ccc",
+        border: "1px solid #ccc",
+      },
+    },
+  };
+  const containerStyle = {
+    backgroundColor: "black",
+    padding: "10px",
+    borderRadius: "10px",
+    height: "100px",
+  };
+  const itemStyle = {
+    float: "left",
+    marginLeft: "5px",
+    marginRight: "5px",
+    backgroundColor: "white",
+    color: "black",
+    cursor: "pointer",
+    width: "50px",
+    textAlign: "center",
+    borderRadius: "5px",
   };
 
   useEffect(() => {
@@ -118,7 +147,6 @@ const EmployeeTable = () => {
           if (result.isConfirmed) {
             // xu ly xoa nv bang id
             handleDeleteEL(key);
-
             Swal.fire("Deleted!", `${name} is deleted.`, "success");
             SetSingleDelete(false);
             dispatch(setDeleteAll(false));
@@ -158,7 +186,6 @@ const EmployeeTable = () => {
   //  // kiem tra xem checkbox tat ca nv
   function addArraydelete() {
     const checkBoxArr = document.getElementsByClassName("CheckEL");
-    console.log("data", checkBoxArr);
     for (let i = 1; i < checkBoxArr.length; i++) {
       if (checkBoxArr[i].checked) {
         if (addDiffrenceEL(arrayCheck, checkBoxArr[i].id)) {
@@ -183,39 +210,34 @@ const EmployeeTable = () => {
     return dispatch(setDeleteAll(false));
   }
 
-  async function handleSearchAPI(){
+  async function handleSearchAPI() {
     try {
       const response = await api.get("employee/search", {
         params: {
           pageLength: totalRowsPerPage,
           pageNumber: pageNumber,
-          fullname:search
+          fullname: search,
         },
-      })
-      if(response) setFilterEmployees(response.data.data) 
-      setTotalRows(response.data.message)
-
-
+      });
+      if (response) setFilterEmployees(response.data.data);
+      setTotalRows(response.data.message);
     } catch (error) {
-      console.log(error.response)
+      console.log(error.response);
     }
   }
 
   useEffect(() => {
-    if(search!=="")
-    {
-      handleSearchAPI()
-    }
-    else{
+    if (search !== "") {
+      handleSearchAPI();
+    } else {
       const timeout = setTimeout(() => {
         fetchEmployees();
         setPending(false);
-        },500)
+      }, 500);
     }
-  }, [search,totalRowsPerPage, pageNumber,totalRows]);
+  }, [search, totalRowsPerPage, pageNumber, totalRows]);
   const handleDeleteEL = async (id) => {
     try {
-
       await api.delete(`employee/delete/${id}`);
       fetchEmployees();
       const checkBoxaArr = document.getElementsByClassName("CheckEL");
@@ -225,18 +247,8 @@ const EmployeeTable = () => {
         }
       }
       dispatch(setDeleteAll(false));
-    } catch (error) {
-      ;
-    }
+    } catch (error) {}
   };
-
-  function handleDeleteAllEL() {
-    try {
-      api.delete(`employee/delete/deleteAll`);
-    } catch (error) {
-      ;
-    }
-  }
 
   const fetchEmployees = async () => {
     try {
@@ -248,21 +260,14 @@ const EmployeeTable = () => {
       });
       if (response && response.data) setEmployeeList(response.data.data);
       setFilterEmployees(response.data.data);
-      setTotalRows(response.data.message)
-      console.log(response.data.message)
-
+      setTotalRows(response.data.message);
     } catch (error) {
       if (error.response) {
         alert(`error:${error.response.data.message}`);
       } else {
-        ;
       }
     }
   };
- 
-
-  ;
-  ;
 
   const columns = [
     {
@@ -288,10 +293,13 @@ const EmployeeTable = () => {
         );
       },
     },
-    { name: "No", selector: (row) => row.id },
+    { name: "No", selector: (row,index) => index },
     { name: "Fullname", selector: (row) => row.fullname },
     { name: "Phone", selector: (row) => row.phone },
-    { name: "Team", selector: (row) => row.team!=null ?  row.team.name : "No Team"},
+    {
+      name: "Team",
+      selector: (row) => (row.team != null ? row.team.name : "No Team"),
+    },
     {
       name: "Option",
       cell: (row) => {
@@ -327,7 +335,7 @@ const EmployeeTable = () => {
       <div
         className="container-fluid "
         style={{
-          width:"99%",
+          width: "99%",
           boxShadow: "rgba(100, 100, 111, 0.3) 0px 7px 29px 0px",
         }}
       >
@@ -335,7 +343,6 @@ const EmployeeTable = () => {
           columns={columns}
           title={`Total ${totalRows} Employees`}
           data={filterEmployees}
-          pagination
           fixedHeaderScrollHeight="450px"
           highlightOnHover
           subHeader
@@ -349,10 +356,6 @@ const EmployeeTable = () => {
               style={{ marginRight: "-16px" }}
             />
           }
-          paginationPerPage={5}
-          paginationRowsPerPageOptions={[5, 10, 15, 25]}
-          paginationServer
-          paginationTotalRows={totalRows}
           customStyles={customStyles}
           subHeaderAlign="right"
           subHeaderWrap
@@ -360,11 +363,21 @@ const EmployeeTable = () => {
           responsive
           progressPending={pending}
           striped="yes"
-          onChangeRowsPerPage={(totalRow, page) => {
-            setpageNumber(page);
-            setTotalRowsPerPage(totalRow);
+        />
+
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel=" >>"
+          onPageChange={(page) => {
+            setpageNumber(page.selected + 1);
           }}
-          onChangePage={(page)=>{setpageNumber(page)}}
+          pageRangeDisplayed={5}
+          pageCount={totalRows / 5}
+          previousLabel="<<"
+          renderOnZeroPageCount={null}
+          containerClassName="pagination-page"
+          pageClassName="li-page"
+          disabledClassName="button-disable"
         />
       </div>
     </>

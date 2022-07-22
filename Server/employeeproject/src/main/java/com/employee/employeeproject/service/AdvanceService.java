@@ -28,7 +28,7 @@ public class AdvanceService {
             advanceDTO=new AdvanceDTO();
             BeanUtils.copyProperties(advances.get(i),advanceDTO);
             advanceDTO.setIdEL(advances.get(i).getEmployee().getId());
-            if(EmployeeID==advances.get(i).getEmployee().getId())
+            if(EmployeeID.equals(advances.get(i).getEmployee().getId()))
             advanceDTOs.add(advanceDTO);
         }
         return advanceDTOs;
@@ -39,7 +39,9 @@ public class AdvanceService {
         return repository.save(advance);
 
     }
-
+    public long count() {
+        return repository.count();
+    }
     public String deleteAdvance(Integer id)
     {
         repository.deleteById(id);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import { Link, NavLink} from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import "../sass/Nav.sass";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,7 +15,7 @@ import { setDeleteAll, setOpenEdit } from "../Store/action";
 import { api } from "../API";
 import { useNavigate } from "react-router-dom";
 function Nav() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   function myFunction(e) {
     var elems = document.querySelectorAll(".active");
     [].forEach.call(elems, function (el) {
@@ -25,16 +25,16 @@ function Nav() {
   }
 
   const [state, dispatch] = EmployeePageStore();
-  const { add, deleteAll, pageName ,idDelete} = state;
-  
+  const { add, deleteAll, pageName, idDelete } = state;
+
   const [deleteSelected, setDeleteSelected] = useState(false); //mo form delete
-const [checkDelete,setCheckDelete]=useState(false)
+  const [checkDelete, setCheckDelete] = useState(false);
   function handleturnAddEL(add) {
     dispatch(
       add === true ? actions.setOpenAdd(false) : actions.setOpenAdd(true)
     );
   }
-  function handleDeleteEmployeeCurrent(){
+  function handleDeleteEmployeeCurrent() {
     if (checkDelete) {
       return Swal.fire({
         title: "Are you sure?",
@@ -51,29 +51,24 @@ const [checkDelete,setCheckDelete]=useState(false)
           Swal.fire("Deleted!", `The employee has been deleted.`, "success");
           setCheckDelete(false);
           dispatch(setDeleteAll(false));
-          navigate("/",{replace:true})
+          navigate("/", { replace: true });
         } else {
           setCheckDelete(false);
         }
       });
     }
-
   }
 
-  function handleDeleteAPI(id)
-  {
+  function handleDeleteAPI(id) {
     try {
-          api.delete(`employee/delete/${id}`).then(res=>{
-            console.log("ket qua:",res.data)
-          })
-          
-    } catch (error) {
-      
-    }
+      api.delete(`employee/delete/${id}`).then((res) => {
+        console.log("ket qua:", res.data);
+      });
+    } catch (error) {}
   }
-  useEffect(()=>{
-    if(checkDelete) handleDeleteEmployeeCurrent()
-  },[checkDelete])
+  useEffect(() => {
+    if (checkDelete) handleDeleteEmployeeCurrent();
+  }, [checkDelete]);
 
   function TurnButtonHeaderGroup(pageName) {
     if (pageName === "Employee") {
@@ -108,23 +103,25 @@ const [checkDelete,setCheckDelete]=useState(false)
           <FontAwesomeIcon
             className="header__employee-title-icon w-20 "
             icon={faCirclePlus}
-            onClick={()=>{dispatch(actions.setAddTeam(true))}}
+            onClick={() => {
+              dispatch(actions.setAddTeam(true));
+            }}
           />
         </>
       );
-    } else {  
+    } else {
       return (
         <>
           <FontAwesomeIcon
             className="header__employee-title-icon"
             icon={faPenToSquare}
-            onClick={()=>dispatch(setOpenEdit(true))}
+            onClick={() => dispatch(setOpenEdit(true))}
           />
           <FontAwesomeIcon
             id="iconDelete"
             className="header__employee-title-icon "
-            onClick={()=>{
-              setCheckDelete(true)
+            onClick={() => {
+              setCheckDelete(true);
             }}
             icon={faTrashCan}
           />
@@ -133,9 +130,9 @@ const [checkDelete,setCheckDelete]=useState(false)
     }
   }
 
-  useEffect( () => {
-     function DeleteSeletedItem() {
-      const response =  deleteSelected;
+  useEffect(() => {
+    function DeleteSeletedItem() {
+      const response = deleteSelected;
       if (response === true && deleteAll) {
         return Swal.fire({
           title: "Are you sure?",
@@ -150,7 +147,6 @@ const [checkDelete,setCheckDelete]=useState(false)
             dispatch(actions.setDeleteItemSelected(true));
             Swal.fire("Deleted!", "The selected Employees deleted.", "success");
             setDeleteSelected(false);
-            
           } else {
             setDeleteSelected(false);
           }
@@ -170,15 +166,21 @@ const [checkDelete,setCheckDelete]=useState(false)
           <ul className="nav nav-pills">
             <li className="nav-item">
               <NavLink
-                className={({isActive})=>isActive ||(pageName!=="Employee" && pageName!=="Team")?"linkPage nav-link active":"linkPage nav-link"}
+                className={({ isActive }) =>
+                  isActive || (pageName !== "Employee" && pageName !== "Team")
+                    ? "linkPage nav-link active"
+                    : "linkPage nav-link"
+                }
                 to=""
-                    >
+              >
                 Employees
               </NavLink>
             </li>
             <li className="nav-item">
               <NavLink
-                className={({isActive})=>isActive?"linkPage nav-link active":"linkPage nav-link"}
+                className={({ isActive }) =>
+                  isActive ? "linkPage nav-link active" : "linkPage nav-link"
+                }
                 to="team"
               >
                 Team
@@ -189,9 +191,7 @@ const [checkDelete,setCheckDelete]=useState(false)
         <div className="header__employee">
           <h3 className="header__employee--title">{pageName}</h3>
           <nav className="header__employee-title-icon-Group">
-          {
-            TurnButtonHeaderGroup(pageName)
-          }
+            {TurnButtonHeaderGroup(pageName)}
           </nav>
         </div>
         <hr />

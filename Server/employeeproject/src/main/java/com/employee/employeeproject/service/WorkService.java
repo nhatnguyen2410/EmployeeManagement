@@ -19,16 +19,27 @@ public class WorkService {
     private WorkRepository repository;
 
     public List<WorkDTO> getAllWorkByID(Integer id) {
+        System.out.println("id nhan dc:"+id);
         List<Work> works = repository.findAll();
         List<WorkDTO> workDTOs = new ArrayList();
         WorkDTO workDTO;
         for (int i = 0; i < works.size(); i++) {
+            System.out.println("data:"+works.get(i).getDate()+works.get(i).getHour());
             workDTO = new WorkDTO();
             BeanUtils.copyProperties(works.get(i), workDTO);
+
             workDTO.setIdEL(works.get(i).getEmployee().getId());
-            if (id == works.get(i).getEmployee().getId())
+            System.out.println("data2:"+workDTO.getDate()+workDTO.getHour()+" "+workDTO.getIdEL());
+
+            if(workDTO.getIdEL().equals(id))
+            {
+
                 workDTOs.add(workDTO);
+            }
         }
+
+
+
         return workDTOs;
     }
 
@@ -66,5 +77,8 @@ public class WorkService {
 
     public Integer getDateWork(Integer idEL, Date date1, Date date2) {
         return repository.getTotalDateWork(idEL, date1, date2);
+    }
+    public long count() {
+        return repository.count();
     }
 }
